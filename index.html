@@ -8,7 +8,6 @@
 </head>
 <body>
 
-<!-- NAVBAR -->
 <header>
   <nav class="navbar">
     <h2 class="logo">Palna</h2>
@@ -16,78 +15,80 @@
       <li><a href="#features">Features</a></li>
       <li><a href="#how">How it Works</a></li>
       <li><a href="#contact">Contact</a></li>
-      <li><button class="login-btn">Login</button></li>
+
+      <li id="userArea">
+        <button class="login-btn" onclick="openLogin()">Login</button>
+      </li>
+
+      <li>
+        <button id="logoutBtn" style="display:none;" onclick="logout()">Logout</button>
+      </li>
     </ul>
   </nav>
 </header>
 
-<!-- HERO SECTION -->
+<!-- LOGIN MODAL -->
+<div id="loginModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeLogin()">&times;</span>
+
+    <h2 id="formTitle">Login</h2>
+
+    <input type="text" id="nameField" placeholder="Full Name" style="display:none;">
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+
+    <button onclick="submitForm()">Submit</button>
+
+    <p id="toggleText">
+      Don't have an account?
+      <span onclick="toggleForm()" class="toggle">Register</span>
+    </p>
+  </div>
+</div>
+
 <section class="hero">
   <div class="hero-text">
     <h1>Guiding Every Child to a Loving Home</h1>
-    <p>India’s AI-powered centralized adoption platform for faster, safer and transparent adoption.</p>
+    <p>India’s AI-powered centralized adoption platform.</p>
     <button class="cta">Get Started</button>
   </div>
 </section>
 
-<!-- FEATURES -->
 <section id="features" class="features">
   <h2>Our Features</h2>
   <div class="feature-grid">
-
-    <div class="card">
-      <h3>AI Smart Matching</h3>
-      <p>Find the best match between children and parents using AI.</p>
-    </div>
-
-    <div class="card">
-      <h3>Document Verification</h3>
-      <p>Upload documents and get instant AI verification.</p>
-    </div>
-
-    <div class="card">
-      <h3>Live Tracking</h3>
-      <p>Track your adoption status in real time.</p>
-    </div>
-
-    <div class="card">
-      <h3>24/7 Chatbot</h3>
-      <p>Get answers anytime about adoption process.</p>
-    </div>
-
+    <div class="card"><h3>AI Smart Matching</h3></div>
+    <div class="card"><h3>Document Verification</h3></div>
+    <div class="card"><h3>Live Tracking</h3></div>
+    <div class="card"><h3>24/7 Chatbot</h3></div>
   </div>
 </section>
 
-<!-- HOW IT WORKS -->
 <section id="how" class="how">
   <h2>How It Works</h2>
-
   <div class="steps">
-    <div class="step">1. Register & upload documents</div>
-    <div class="step">2. AI verifies profile</div>
-    <div class="step">3. Get matched with child</div>
-    <div class="step">4. Track approval & adoption</div>
+    <div class="step">1. Register</div>
+    <div class="step">2. AI verifies</div>
+    <div class="step">3. Match</div>
+    <div class="step">4. Track</div>
   </div>
 </section>
 
-<!-- CONTACT -->
 <section id="contact" class="contact">
-  <h2>Contact Us</h2>
+  <h2>Contact</h2>
   <form id="contactForm">
-    <input type="text" placeholder="Your Name" required>
+    <input type="text" placeholder="Name" required>
     <input type="email" placeholder="Email" required>
     <textarea placeholder="Message"></textarea>
-    <button type="submit">Send Message</button>
+    <button type="submit">Send</button>
   </form>
 </section>
 
-<!-- FOOTER -->
 <footer>
-  <p>© 2026 Palna | Adoption Made Transparent</p>
+  <p>© 2026 Palna</p>
 </footer>
 
 <script src="script.js"></script>
 </body>
 </html>
-
-
