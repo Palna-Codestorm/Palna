@@ -35,7 +35,7 @@ body {
   color: #333;
 }
 
-.login-btn {
+.login-btn, #logoutBtn {
   background: #6c63ff;
   border: none;
   color: white;
@@ -154,4 +154,52 @@ footer {
   padding: 20px;
   background: #111;
   color: white;
+}
+
+/* LOGIN MODAL */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 10;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+  background: white;
+  padding: 30px;
+  width: 350px;
+  margin: 120px auto;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.modal-content input {
+  width: 100%;
+  margin: 10px 0;
+}
+
+.modal-content button {
+  width: 100%;
+  margin-top: 10px;
+  background: #6c63ff;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.close {
+  float: right;
+  cursor: pointer;
+  font-size: 22px;
+}
+
+.toggle {
+  color: #6c63ff;
+  cursor: pointer;
+  font-weight: bold;
 }
