@@ -1,90 +1,254 @@
-// smooth scroll
-document.querySelectorAll('a').forEach(anchor=>{
-  anchor.addEventListener('click',function(e){
-    if(this.getAttribute('href').startsWith("#")){
-      e.preventDefault();
-      document.querySelector(this.getAttribute('href')).scrollIntoView({behavior:'smooth'});
+/* =========================
+   SAFE DOM SELECTORS
+========================= */
+const $ = (id) => document.getElementById(id);
+
+/* =========================
+   SMOOTH SCROLL (SAFE)
+========================= */
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener("click", function (e) {
+    try {
+      const target = document.querySelector(this.getAttribute("href"));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: "smooth" });
+      }
+    } catch (err) {
+      console.error("Scroll Error:", err);
     }
   });
 });
 
-// contact form
-document.getElementById("contactForm").addEventListener("submit",function(e){
-  e.preventDefault();
-  alert("Message sent!");
+/* =========================
+   CONTACT FORM
+========================= */
+const contactForm = $("contactForm");
+
+if (contactForm) {
+  contactForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const name = contactForm.querySelector('input[type="text"]').value.trim();
+    const email = contactForm.querySelector('input[type="email"]').value.trim();
+
+    if (!name || !email) {
+      showToast("Please fill required fields");
+      return;
+    }
+
+    showToast("Message sent successfully ✅");
+    contactForm.reset();
+  });
+}
+
+/* =========================
+   LOGIN SYSTEM
+========================= */
+let isRegister = false;
+
+function openLogin() {
+  $("loginModal").style.display = "block";
+}
+
+function closeLogin() {
+  $("loginModal").style.display = "none";
+  clearForm();
+}
+
+/* Close modal outside click */
+window.addEventListener("click", (e) => {
+  if (e.target === $("loginModal")) closeLogin();
 });
 
-// LOGIN SYSTEM
-let isRegister=false;
+/* ESC key close */
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeLogin();
+});
 
-function openLogin(){
-  document.getElementById("loginModal").style.display="block";
-}
+/* Toggle Login/Register */
+function toggleForm() {
+  isRegister = !isRegister;
 
-function closeLogin(){
-  document.getElementById("loginModal").style.display="none";
-}
-
-function toggleForm(){
-  isRegister=!isRegister;
-
-  if(isRegister){
-    document.getElementById("formTitle").innerText="Register";
-    document.getElementById("nameField").style.display="block";
-    document.getElementById("toggleText").innerHTML=
-    'Already have account? <span class="toggle" onclick="toggleForm()">Login</span>';
-  }else{
-    document.getElementById("formTitle").innerText="Login";
-    document.getElementById("nameField").style.display="none";
-    document.getElementById("toggleText").innerHTML=
-    'No account? <span class="toggle" onclick="toggleForm()">Register</span>';
+  if (isRegister) {
+    $("formTitle").innerText = "Register";
+    $("nameField").style.display = "block";
+    $("toggleText").innerHTML =
+      'Already have account? <span class="toggle" onclick="toggleForm()">Login</span>';
+  } else {
+    $("formTitle").innerText = "Login";
+    $("nameField").style.display = "none";
+    $("toggleText").innerHTML =
+      'No account? <span class="toggle" onclick="toggleForm()">Register</span>';
   }
 }
 
-function submitForm(){
-  let email=document.getElementById("email").value;
-  let password=document.getElementById("password").value;
-  let name=document.getElementById("nameField").value;
+/* =========================
+   VALIDATION
+========================= */
+function validateEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
 
-  if(isRegister){
-    let user={name,email,password};
-    localStorage.setItem("palnaUser",JSON.stringify(user));
-    localStorage.setItem("loggedIn","true");
-    alert("Registered!");
+function validatePassword(password) {
+  return password.length >= 6;
+}
+
+/* =========================
+   STORAGE HELPERS
+========================= */
+function getUser() {
+  try {
+    return JSON.parse(localStorage.getItem("palnaUser"));
+  } catch {
+    return null;
+  }
+}
+
+function saveUser(user) {
+  localStorage.setItem("palnaUser", JSON.stringify(user));
+}
+
+function setSession() {
+  localStorage.setItem("loggedIn", "true");
+  localStorage.setItem("loginTime", Date.now());
+}
+
+/* =========================
+   SUBMIT LOGIN / REGISTER
+========================= */
+function submitForm() {
+  const email = $("email").value.trim();
+  const password = $("password").value.trim();
+  const name = $("nameField").value.trim();
+
+  if (!validateEmail(email)) {
+    showToast("Invalid email format ❌");
+    return;
+  }
+
+  if (!validatePassword(password)) {
+    showToast("Password must be 6+ characters ❌");
+    return;
+  }
+
+  if (isRegister) {
+    if (!name) {
+      showToast("Enter full name ❌");
+      return;
+    }
+
+    const user = { name, email, password };
+
+    saveUser(user);
+    setSession();
+
+    showToast("Registered successfully 🎉");
     showUser();
     closeLogin();
-  }
-  else{
-    let user=JSON.parse(localStorage.getItem("palnaUser"));
-    if(!user){alert("Register first");return;}
+  } else {
+    const user = getUser();
 
-    if(email===user.email && password===user.password){
-      localStorage.setItem("loggedIn","true");
+    if (!user) {
+      showToast("Please register first");
+      return;
+    }
+
+    if (email === user.email && password === user.password) {
+      setSession();
       showUser();
+      showToast("Welcome back 👋");
       closeLogin();
-    }else{
-      alert("Wrong details");
+    } else {
+      showToast("Wrong email or password ❌");
     }
   }
 }
 
-function showUser(){
-  let user=JSON.parse(localStorage.getItem("palnaUser"));
-  if(!user)return;
+/* =========================
+   USER UI UPDATE
+========================= */
+function showUser() {
+  const user = getUser();
+  if (!user) return;
 
-  document.getElementById("userArea").innerHTML=
-  `<span>Hi, ${user.name}</span>`;
-
-  document.getElementById("logoutBtn").style.display="inline-block";
+  $("userArea").innerHTML = `<span>Hi, ${user.name}</span>`;
+  $("logoutBtn").style.display = "inline-block";
 }
 
-function logout(){
-  localStorage.setItem("loggedIn","false");
+let slides = document.querySelectorAll(".slide");
+let index = 0;
+
+setInterval(() => {
+  slides[index].classList.remove("active");
+  index = (index + 1) % slides.length;
+  slides[index].classList.add("active");
+}, 3000);
+
+
+/* =========================
+   LOGOUT
+========================= */
+function logout() {
+  localStorage.removeItem("loggedIn");
+  localStorage.removeItem("loginTime");
   location.reload();
 }
 
-window.onload=function(){
-  if(localStorage.getItem("loggedIn")==="true"){
+/* =========================
+   SESSION EXPIRY (Demo)
+========================= */
+function checkSession() {
+  const loginTime = localStorage.getItem("loginTime");
+  if (!loginTime) return;
+
+  const now = Date.now();
+  const diff = now - loginTime;
+
+  const ONE_DAY = 24 * 60 * 60 * 1000;
+
+  if (diff > ONE_DAY) {
+    logout();
+  }
+}
+
+/* =========================
+   CLEAR FORM
+========================= */
+function clearForm() {
+  $("email").value = "";
+  $("password").value = "";
+  $("nameField").value = "";
+}
+
+/* =========================
+   TOAST MESSAGE (BETTER UX)
+========================= */
+function showToast(message) {
+  let toast = document.createElement("div");
+  toast.innerText = message;
+
+  toast.style.position = "fixed";
+  toast.style.bottom = "30px";
+  toast.style.right = "30px";
+  toast.style.background = "#6c63ff";
+  toast.style.color = "white";
+  toast.style.padding = "12px 20px";
+  toast.style.borderRadius = "8px";
+  toast.style.zIndex = "9999";
+
+  document.body.appendChild(toast);
+
+  setTimeout(() => toast.remove(), 3000);
+}
+
+/* =========================
+   INIT
+========================= */
+window.onload = function () {
+  checkSession();
+
+  if (localStorage.getItem("loggedIn") === "true") {
     showUser();
   }
 };
